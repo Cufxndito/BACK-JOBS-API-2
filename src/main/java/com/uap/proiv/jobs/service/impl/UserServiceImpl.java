@@ -3,6 +3,7 @@ package com.uap.proiv.jobs.service.impl;
 import com.uap.proiv.jobs.client.UserApiRepository;
 import com.uap.proiv.jobs.dto.User;
 import com.uap.proiv.jobs.dto.UserApiResponse;
+import com.uap.proiv.jobs.dto.UserRequest;
 import com.uap.proiv.jobs.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,8 +32,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public User searchById(int id) {
         User user =  userApiRepository.getUserById(id);
+        if (user == null) {
+            throw new IllegalArgumentException("Usuario no encontrado: " + id);
+        }
         user.setJobId(1);
         return user;
+    }
+
+    @Override
+    public User create(UserRequest request) {
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setAvatar(request.getAvatar());
+        user.setJobId(request.getJobId());
+        return userApiRepository.createUser(user);
     }
 
     @Override

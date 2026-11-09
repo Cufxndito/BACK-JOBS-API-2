@@ -64,6 +64,46 @@ public class UserApiRepository {
     public User getUserById(int id) {
         return getUsers(1).getData().stream().filter(user -> id == user.getId()).findFirst().orElse(null);
     }
+
+    public User createUser(User user) {
+        try {
+            Map<String, String> userMap = new HashMap<>();
+            userMap.put("name", user.getFirstName());
+            userMap.put("job", user.getLastName());
+            String requestBody = objectMapper.writeValueAsString(userMap);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl))
+                    .header("Accept", "application/json")
+                    .header("X-API-KEY", apiKey)
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(
+                    request,
+                    HttpResponse.BodyHandlers.ofString()
+            );
+
+            if (response.statusCode() != 201) {
+                throw new RuntimeException("Error en ReqRes API. Código: " + response.statusCode());
+            }
+
+            User createdUser = objectMapper.readValue(response.body(), User.class);
+            createdUser.setEmail(user.getEmail());
+            createdUser.setFirstName(user.getFirstName());
+            createdUser.setLastName(user.getLastName());
+            createdUser.setAvatar(user.getAvatar());
+            createdUser.setJobId(user.getJobId());
+            return createdUser;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("La creación del usuario fue interrumpida", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear el usuario en la API: " + e.getMessage(), e);
+        }
+    }
+
 /*
     public User getUserById(int id) {
         try {
@@ -118,4 +158,3 @@ public class UserApiRepository {
     }
 
 }
-
