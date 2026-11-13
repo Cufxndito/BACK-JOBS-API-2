@@ -73,11 +73,14 @@ public class UserControllerIntegrationTest {
     void getUserById() throws Exception {
         String jsonResponse = """
                 {
-                "id":2,
-                "email":"john.doe@example.com",
-                "first_name":"Juan",
-                "last_name":"Perez",
-                "avatar": "https://reqres.in/img/faces/2.jpg"
+                "page":1,"per_page":6,"total":1,"total_pages":1,
+                "data":[{
+                    "id":2,
+                    "email":"john.doe@example.com",
+                    "first_name":"Juan",
+                    "last_name":"Perez",
+                    "avatar": "https://reqres.in/img/faces/2.jpg"
+                }]
                 }
                 """;
         mockWebServer.enqueue(new MockResponse()
@@ -96,6 +99,7 @@ public class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$.avatar").value("https://reqres.in/img/faces/2.jpg"));
 
         RecordedRequest request = mockWebServer.takeRequest();
+        assertEquals("/api/users?page=1", request.getPath());
         assertEquals("application/json", request.getHeader("Accept"));
         assertEquals("free_user_3HYTiqu2JKQ4TfGq884xW5mqfrd", request.getHeader("X-API-KEY"));
     }
