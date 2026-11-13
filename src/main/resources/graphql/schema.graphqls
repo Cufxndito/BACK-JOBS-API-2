@@ -27,9 +27,9 @@ type User {
 type Job {
     name:String
     salary:Float
-    hours:Float
+    hours:Int
     id:ID
-    resources:Float
+    resources:Int
 }
 
 input AssignRequest {
@@ -40,8 +40,8 @@ input AssignRequest {
 input JobRequest {
     name: String
     salary: Float
-    hours: Float
-    resources: Float
+    hours: Int
+    resources: Int
 }
 
 input UserRequest {
